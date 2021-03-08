@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Songs } from 'src/app/types';
 
 @Component({
@@ -15,6 +15,7 @@ import { Songs } from 'src/app/types';
       </mat-card-content>
       <mat-card-actions>
         <button
+          (click)="delete.emit()"
           title="delete song"
           mat-icon-button
           color="warn"
@@ -23,6 +24,7 @@ import { Songs } from 'src/app/types';
           <mat-icon>delete</mat-icon>
         </button>
         <button
+          (click)="edit.emit()"
           title="set/edit song"
           mat-icon-button
           color="primary"
@@ -51,8 +53,20 @@ import { Songs } from 'src/app/types';
   ],
 })
 export class SongListComponent implements OnInit {
-  @Input()
-  songs: any;
+  /**
+   * Presentational components receive data through @Input() and communicate events
+   * through @Output() but generally maintain no internal state of their
+   * own. All decisions are delegated to 'container', or 'smart'
+   * components before data updates flow back down.
+   *
+   */
+
+  // presentational component data
+  @Input() songs: any;
+
+  // Custom event emitters
+  @Output() delete = new EventEmitter<Songs>();
+  @Output() edit = new EventEmitter<Songs>();
 
   constructor() {}
 

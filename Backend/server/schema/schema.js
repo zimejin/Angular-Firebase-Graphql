@@ -22,6 +22,7 @@ admin.initializeApp({
 // Initialize Firestore Realtime Database
 const fireStoreDB = admin.firestore();
 
+// Define a song type
 const SongType = new GraphQLObjectType({
   name: "Songs",
   description: "List of all songs available",
@@ -34,13 +35,15 @@ const SongType = new GraphQLObjectType({
   }),
 });
 
-// Define Root Query
+// Define a Root Query which implements our database structure into a graphQL object data model
 const RootQuery = new GraphQLObjectType({
   name: "Query",
   description: "Root Query",
   fields: () => ({
     songs: {
       type: GraphQLList(SongType),
+
+      // Resolvers are responsible for returning data to a specified field
       resolve: async () =>
         (await fireStoreDB.collection("songs").get()).docs.map((song) =>
           song.data()
@@ -75,6 +78,7 @@ const RootMutation = new GraphQLObjectType({
   }),
 });
 
+// Export the module
 module.exports = new GraphQLSchema({
   query: RootQuery,
   mutation: RootMutation,

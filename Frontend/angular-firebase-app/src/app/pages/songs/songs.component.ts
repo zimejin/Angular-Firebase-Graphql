@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Apollo, gql } from 'apollo-angular';
 import { Songs } from 'src/app/types';
-import { map, tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { SongsServiceGQL } from './songs.service';
 
 @Component({
   selector: 'app-songs',
@@ -19,7 +20,7 @@ import { Router } from '@angular/router';
   `,
   styles: [``],
 })
-export class SongsComponent implements OnInit {
+export class SongsComponent implements OnInit, OnDestroy {
   /**
    * Container components are permitted to have just enough styles
    * to bring the view together. If the number of styles grow,
@@ -34,8 +35,13 @@ export class SongsComponent implements OnInit {
   songs$!: Observable<Songs[]>;
   loading = true;
   error: any;
+  mutationSubscription$!: Subscription;
 
-  constructor(private apollo: Apollo, private router: Router) {}
+  constructor(
+    private apollo: Apollo,
+    private router: Router,
+    private songsService: SongsServiceGQL
+  ) {}
 
   ngOnInit(): void {
     this.songs$ = this.apollo
@@ -48,15 +54,20 @@ export class SongsComponent implements OnInit {
               artist
               album
               year
+              rank
             }
           }
         `,
-        pollInterval: 500,
+        pollInterval: 1000,
       })
       .valueChanges.pipe(
         tap((result) => console.log('debug: ', result)),
         map((response: any) => response.data.songs as Songs[])
       );
+  }
+
+  ngOnDestroy() {
+    this.mutationSubscription$.unsubscribe();
   }
 
   addSong() {
@@ -65,7 +76,21 @@ export class SongsComponent implements OnInit {
   }
 
   deleteSong(song: Songs) {
-    console.log('Deleting:: ', song);
+    try {
+      console.log('Deleting:: ', song);
+      this.mutationSubscription$ = this.songsService
+        .mutate({
+          rank: song.rank,
+        })
+        .subscribe(
+          (response) => {
+            console.log('response: ', response);
+          },
+          (error) => catchError(error)
+        );
+    } catch (error) {
+      console.log('Caught Error => ', error);
+    }
   }
 
   editSong(song: Songs) {

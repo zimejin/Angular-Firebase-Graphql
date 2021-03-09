@@ -8,6 +8,8 @@ const {
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
+  isNullableType,
+  isObjectType,
 } = graphql;
 
 // Firebase imports
@@ -73,6 +75,30 @@ const RootMutation = new GraphQLObjectType({
           title: args.title,
           year: args.year,
         });
+
+        return (await fireStoreDB.collection("songs").get()).docs.map(
+          (song) => song.data
+        );
+      },
+    },
+    deleteSong: {
+      type: GraphQLList(SongType),
+      args: {
+        rank: {
+          type: GraphQLNonNull(GraphQLInt),
+        },
+      },
+      resolve: async (parent, args) => {
+        const doc = await fireStoreDB
+          .collection("songs")
+          .where("rank", "==", args.rank)
+          .get();
+
+        doc.forEach((doc) => doc.ref.delete());
+
+        return (await fireStoreDB.collection("songs").get()).docs.map(
+          (song) => song.data
+        );
       },
     },
   }),

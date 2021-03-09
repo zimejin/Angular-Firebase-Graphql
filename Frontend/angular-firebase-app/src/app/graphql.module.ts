@@ -7,7 +7,7 @@ import {
 import { ApolloClientOptions, InMemoryCache } from '@apollo/client/core';
 import { HttpLink } from 'apollo-angular/http';
 
-const uri = 'https://48p1r2roz4.sse.codesandbox.io'; // our GraphQL API
+const uri = 'http://localhost:4000/graphql'; // our GraphQL API
 
 export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
   return {
@@ -19,7 +19,7 @@ export function createApollo(httpLink: HttpLink): ApolloClientOptions<any> {
 @NgModule({
   providers: [
     {
-      provide: APOLLO_OPTIONS,
+      provide: APOLLO_OPTIONS, // <-- Standard initialization
       useFactory: createApollo,
       deps: [HttpLink],
     },

@@ -205,11 +205,14 @@ export class AddSongComponent implements OnInit {
         .subscribe(
           ({ data }) => {
             console.log('got data', data);
+            this.router.navigate(['']);
           },
           (error) => {
             console.log('there was an error sending the query', error);
           }
         );
+    } else {
+      alert("Please fill the form! Baka!!")
     }
   }
 }

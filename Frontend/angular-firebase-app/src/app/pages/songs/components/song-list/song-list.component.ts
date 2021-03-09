@@ -10,12 +10,13 @@ import { Songs } from 'src/app/types';
         <mat-card-subtitle>{{ item?.artist }}</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
-        <p>Year {{ item?.year }}</p>
-        <p>Album {{ item?.album }}</p>
+        <p>Year: {{ item?.year }}</p>
+        <p>Album: {{ item?.album }}</p>
+        <p>Rank: {{ item?.rank }}</p>
       </mat-card-content>
       <mat-card-actions>
         <button
-          (click)="delete.emit()"
+          (click)="delete.emit(item)"
           title="delete song"
           mat-icon-button
           color="warn"
@@ -24,7 +25,7 @@ import { Songs } from 'src/app/types';
           <mat-icon>delete</mat-icon>
         </button>
         <button
-          (click)="edit.emit()"
+          (click)="edit.emit(item)"
           title="set/edit song"
           mat-icon-button
           color="primary"
@@ -65,8 +66,8 @@ export class SongListComponent implements OnInit {
   @Input() songs: any;
 
   // Custom event emitters
-  @Output() delete = new EventEmitter<Songs>();
-  @Output() edit = new EventEmitter<Songs>();
+  @Output() delete = new EventEmitter<any>();
+  @Output() edit = new EventEmitter<any>();
 
   constructor() {}
 

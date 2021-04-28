@@ -11,7 +11,7 @@ Frontend:-
 * Angular Material
 * Apollo GraphQL
 
-Backedn:-
+Backend:-
 * Firebase Firestore
 * Express GraphQL
 * Node.js
